@@ -1,1 +1,3 @@
-# COMP4350-A1
+# COMP-4350 Assignment 1
+
+Hello there this is the readme.
