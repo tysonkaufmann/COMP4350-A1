@@ -13,7 +13,8 @@ var filterTop = {
 }
 var filterNew = {
   pagesize: 10,
-  sort: 'creation',
+  //sort: 'creation',
+  sort: 'votes',
   order: 'desc',
   filter: '!2A0j)MOzD3wIaLkC-MkJcgdAVxXrUZAn.(GA3LgB2zdb1.RCIYYIzL'
 }
