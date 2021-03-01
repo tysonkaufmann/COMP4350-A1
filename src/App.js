@@ -1,23 +1,12 @@
 import React, { useState, useRef } from 'react'
 import QuestionList from './QuestionList'
-
-var testdata = [{score: 0, creation_date: 1614460036, question_id: 66403487, link: "https://stackoverflow.com/questions/66403487/how-t…idate-xml-data-from-log-file-content-using-python", title: "How to validate XML data from log file content using python"}, {score: 0, creation_date: 1614460002, question_id: 66403483, link: "https://stackoverflow.com/questions/66403483/domain-restriction-in-babelnet", title: "Domain Restriction in BabelNet"}, {score: 0, creation_date: 1614459998, question_id: 66403481, link: "https://stackoverflow.com/questions/66403481/setting-up-aws-elb-with-backend-express-app", title: "Setting up AWS ELB with backend express app"}]
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap'
 
 var stackexchange = require('stackexchange')
 var context = new stackexchange()
-var filterTop = {
-  pagesize: 10,
-  sort: 'votes',
-  order: 'desc',
-  filter: '!2A0j)MOzD3wIaLkC-MkJcgdAVxXrUZAn.(GA3LgB2zdb1.RCIYYIzL'
-}
-var filterNew = {
-  pagesize: 10,
-  //sort: 'creation',
-  sort: 'votes',
-  order: 'desc',
-  filter: '!2A0j)MOzD3wIaLkC-MkJcgdAVxXrUZAn.(GA3LgB2zdb1.RCIYYIzL'
-}
+
+
 //Filter options (i think)
 // fromdate: 1614297600 === Feb 26 2021
 // todate:
@@ -36,23 +25,38 @@ function reqQuestions(filter) {
 
 async function getQuestions(tag) {
   console.log("In getQuestions")
-  //TODO add filters here
-  //var filterTop = 
-  //var filterNew =
-  let newQuestions = await reqQuestions(filterNew)
-
   
-  console.log("Got new questions")
-  console.log(newQuestions)
+  //Current time in UNIX timestamp for filter
+  var toDate = parseInt(new Date().getTime() / 1000, 10)
 
-  //Send query for 10 top questions based on tag
-  //var topQuestions = context.questions.questions(filterTop, function(err, results){
-  //  if (err) throw err
-  //  console.log(results)
-  //  return results.items
-  //})
-  console.log("Returning getQuestions")
-  return newQuestions
+  //One week is 604800 seconds
+  var fromDate = toDate - 604800
+
+  var filterTop = {
+    pagesize: 10,
+    sort: 'votes',
+    order: 'desc',
+    fromdate: fromDate,
+    todate: toDate,
+    tagged: tag,
+    filter: '!2A0j)MOzD3wIaLkC-MkJcgdAVxXrUZAn.(GA3LgB2zdb1.RCIYYIzL'
+  }
+
+  var filterNew = {
+    pagesize: 10,
+    sort: 'creation',
+    order: 'desc',
+    fromdate: fromDate,
+    todate: toDate,
+    tagged: tag,
+    filter: '!2A0j)MOzD3wIaLkC-MkJcgdAVxXrUZAn.(GA3LgB2zdb1.RCIYYIzL'
+  }
+
+  let newQuestions = await reqQuestions(filterNew)
+  let topQuestions = await reqQuestions(filterTop)
+
+  //Return list in desending order by creation date (newest first)
+  return [...newQuestions, ...topQuestions].sort((a,b) => b.creation_date - a.creation_date)
 }
 
 function App() {
@@ -60,34 +64,48 @@ function App() {
   //updateQuestions is the function for updating questions
   const [questions, updateQuestions] = useState([])
   const questionTagRef = useRef()
+  const [timeTaken, updateTimeTaken] = useState([])
 
   function searchQuestions(e) {
     const tag = questionTagRef.current.value
     if (tag === '') return
     //console.log(tag)
+    var startTime = new Date()
 
     getQuestions(tag).then((value) => {
       console.log("before update questions")
       console.log(value)
       updateQuestions(value)
+    }).then(() => {
+      var totalTime = new Date() - startTime
+      updateTimeTaken("Completed Request in: " + totalTime + "ms")
     }).catch(err => {
       console.log(err)
     })
 
-    //updateQuestions(() => {
-      //Send query for 10 newest questions based on tag
-
-    //  return getQuestions(tag)
-    //})
     questionTagRef.current.value = null
   }
 
   return (
     <>
-      <input ref={questionTagRef} type="text" />
-      <button onClick={searchQuestions}>Search</button>
-      <QuestionList questions={questions} />
-      <div>Completed request in (#)ms</div>
+      <Container>
+        <Form>
+          <Form.Group>
+            <Form.Label>
+              <h1>Stack Overflow Search</h1>
+            </Form.Label>
+            <Form.Control type="input" ref={questionTagRef} />
+            <Form.Text className="text-muted">Search for a tag!</Form.Text>
+            <Button onClick={searchQuestions}>Search</Button>
+          </Form.Group>
+        </Form>
+      </Container>
+      <Container>
+        <QuestionList questions={questions} />
+      </Container>
+      <Container>
+        <div>{timeTaken}</div>
+      </Container>
     </>
   )
 }
