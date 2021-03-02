@@ -1,7 +1,7 @@
 import React from 'react'
 import Comment from './Comment'
 
-//TODO change key to use id of question/answer
+//Return a list of formatted comment containers
 export default function CommentList({ comments }) {
     if (typeof comments === 'undefined') {
         return null

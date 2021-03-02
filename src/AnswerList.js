@@ -1,7 +1,7 @@
 import React from 'react'
 import Answer from './Answer'
 
-//TODO change key to use id of question/answer
+//Return a list of formatted answer containers
 export default function AnswerList({ answers }) {
     if (typeof answers === 'undefined') {
         return null
