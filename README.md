@@ -1,3 +1,12 @@
+# COMP4350 Assignment 1
+Web application for my assignment 1 implementationd.
+
+Makes calls to the stackexchange API (default site: stackoverflow) and retreives 10 of the newest questions related to a given tag as well as 10 of the top voted questions related to a given tag in the past week.
+
+Presents these questions as well as all related answers and comments on a single page sorted by creation date.
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
