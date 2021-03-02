@@ -1,5 +1,5 @@
 # COMP4350 Assignment 1
-Web application for my assignment 1 implementationd.
+Web application for my assignment 1 implementation.
 
 Makes calls to the stackexchange API (default site: stackoverflow) and retreives 10 of the newest questions related to a given tag as well as 10 of the top voted questions related to a given tag in the past week.
 
